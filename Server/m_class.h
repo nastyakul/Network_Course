@@ -1,5 +1,5 @@
-#pragma once
-// ConsoleApplication1.cpp: определяет точку входа для консольного приложения.
+п»ї#pragma once
+// ConsoleApplication1.cpp: 
 //
 
 #include <windows.h> 
