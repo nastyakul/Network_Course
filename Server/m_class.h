@@ -1,6 +1,5 @@
-﻿#pragma once
-// ConsoleApplication1.cpp: 
-//
+#pragma once
+
 
 #include <windows.h> 
 #include <tchar.h>
@@ -10,9 +9,9 @@
 
 #define BUFSIZE 10000 
 
-static const char exit_phrase[] = "Terminate RCP";
+static const char exit_phrase[] = "Terminate RCP"; //static доступная только в этом файле константа
 
-enum
+enum //перечисляемый тип данных, автомат 0 и 1
 {
 	WRITE_PIPE_THREAD,
 	READ_PIPE_THREAD
@@ -23,7 +22,7 @@ class m_process;
 struct client_type
 {
 	m_process* proc;
-	std::thread m_threads[2];
+	std::thread m_threads[2]; //объявили. чобы тут использовать
 	SOCKET socket;
 };
 
@@ -31,21 +30,21 @@ class m_process
 {
 public:
 	m_process();
-	~m_process();
+	~m_process(); //деструктор, функкция вызывается при удалении объекта
 
-	HANDLE g_hChildStd_IN_Rd = NULL;
+	HANDLE g_hChildStd_IN_Rd = NULL; //тип, 
 	HANDLE g_hChildStd_IN_Wr = NULL;
 	HANDLE g_hChildStd_OUT_Rd = NULL;
 	HANDLE g_hChildStd_OUT_Wr = NULL;
 
-	SECURITY_ATTRIBUTES saAttr;
+	SECURITY_ATTRIBUTES saAttr; 
 
 	void CreateChildProcess(void);
 	void ErrorExit(PTSTR);
 
 };
 
-m_process::~m_process()
+m_process::~m_process()  //функция принадлежит классу
 {
 	if (!CloseHandle(g_hChildStd_IN_Rd))
 		ErrorExit(TEXT("StdInWr CloseHandle"));
@@ -135,7 +134,7 @@ void m_process::CreateChildProcess()
 	}
 }
 
-void m_process::ErrorExit(PTSTR lpszFunction)
+void m_process::ErrorExit(PTSTR lpszFunction) //функция обработки ошибок
 
 // Format a readable error message, display a message box, 
 // and exit from the application.
@@ -173,7 +172,7 @@ int ReadFromPipe(client_type* new_client)
 	CHAR chBuf[BUFSIZE] = {};
 	BOOL bSuccess = FALSE;
 
-	for (;;)
+	for (;;) //while 1
 	{
 		bSuccess = ReadFile(new_client -> proc -> g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL);
 		if (!bSuccess) break;
