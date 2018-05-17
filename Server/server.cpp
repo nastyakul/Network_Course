@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <string>
@@ -13,12 +13,12 @@
 
 const char OPTION_VALUE = 1;
 
-void delete_disconnected_clients(std::list<client_type*> *connected_clients)
+void delete_disconnected_clients(std::list<client_type*> *connected_clients) //указатель на список из подсоединенных клиентов
 {
         std::list<client_type*> ::iterator iter = connected_clients -> begin();
-        while(iter != connected_clients -> end())
+        while(iter != connected_clients -> end())  //итератор, класс, по которому можно итерироваться
         {
-                if ((*iter) -> socket == INVALID_SOCKET)
+                if ((*iter) -> socket == INVALID_SOCKET) //разыменование, обращение в сокет
                 {
                         delete (*iter)->proc;
                         delete *iter;
@@ -58,33 +58,33 @@ int main()
         server_socket = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
 
         //Setup socket options
-        setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &OPTION_VALUE, sizeof(int)); //Make it possible to re-bind to a port that was used within the last 2 minutes
-        setsockopt(server_socket, IPPROTO_TCP, TCP_NODELAY, &OPTION_VALUE, sizeof(int)); //Used for interactive programs
+        setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &OPTION_VALUE, sizeof(int)); 
+        setsockopt(server_socket, IPPROTO_TCP, TCP_NODELAY, &OPTION_VALUE, sizeof(int)); 
 
-                                                                                                                                                                         //Assign an address to the server socket.
+                                                                                                       
         std::cout << "Binding socket..." << std::endl;
         bind(server_socket, server->ai_addr, (int)server->ai_addrlen);
 
         //Listen for incoming connections.
         std::cout << "Listening..." << std::endl;
-        listen(server_socket, SOMAXCONN);
+        listen(server_socket, SOMAXCONN); //читай документацию
 
         while (1)
         {
                 SOCKET incoming = INVALID_SOCKET;
-                incoming = accept(server_socket, NULL, NULL);
+                incoming = accept(server_socket, NULL, NULL); //почитать
 
                 if (incoming == INVALID_SOCKET) continue;
 
                 //Create a temporary id for the next client
 
-                client_type* new_client = new client_type;
+                client_type* new_client = new client_type;  //new - это выделение памяти
 
                 new_client -> socket = incoming;
 
-                new_client -> proc = new m_process();
-                new_client -> m_threads[READ_PIPE_THREAD] = std::thread(ReadFromPipe, new_client);
-                new_client -> m_threads[WRITE_PIPE_THREAD] = std::thread(WriteToPipe, new_client);
+                new_client -> proc = new m_process(); 
+                new_client -> m_threads[READ_PIPE_THREAD] = std::thread(ReadFromPipe, new_client); //0
+                new_client -> m_threads[WRITE_PIPE_THREAD] = std::thread(WriteToPipe, new_client);  //1
                 delete_disconnected_clients(&connected_clients);
                 connected_clients.push_back(new_client);
         }
