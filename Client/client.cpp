@@ -71,11 +71,25 @@ int main()
         hints.ai_family = AF_UNSPEC;
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_protocol = IPPROTO_TCP;
-
+ 
+        char ip_connect_to[15];
+        char port[10];
+        int d = 0;
+        printf("Enter IP connect to:\n");
+        printf("Example: 123.123.123.123\n");
+        scanf("%s", ip_connect_to);
+       
+        printf("Enter PORT connect to:\n");
+        printf("Example: 8080\n");
+        scanf("%s", port);
+       
+       
+        #define DEFAULT_PORT "3504" //any number, for ex. http port 80
+ 
         cout << "Connecting...\n";
-
+ 
         // Resolve the server address and port
-        iResult = getaddrinfo(HOST, DEFAULT_PORT, &hints, &result); //указ на структуру и на указатель на указатель
+        iResult = getaddrinfo(ip_connect_to, port, &hints, &result); //указ на структуру и на указатель на указатель
         if (iResult != 0) {                     //заполняем исходя из хоста и порта
                 cout << "getaddrinfo() failed with error: " << iResult << endl;
                 WSACleanup();
