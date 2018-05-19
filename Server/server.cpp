@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <list>
+#include <fstream>
 
 #include "m_class.h"
 
@@ -27,6 +28,20 @@ void delete_disconnected_clients(std::list<client_type*> *connected_clients) //�
 		}
 		iter++;
 	}
+}
+
+void load_white_list(std::list<std::string>* white_ip)
+{
+	std::string current_ip;
+	std::ifstream white_file;
+
+	white_file.open("C:\\Users\\User\\Desktop\\Networks_Course\\ConsoleApplication2\\white_list.txt", std::ifstream::in);
+	while (std::getline(white_file, current_ip))
+	{
+		white_ip->push_back(current_ip);
+	}
+
+	white_file.close();
 }
 
 int main()
@@ -68,8 +83,15 @@ int main()
 	std::cout << "Listening..." << std::endl;
 	listen(server_socket, SOMAXCONN); //читай документацию
 
+	std::list<std::string> white_ip;
+
+	load_white_list(&white_ip);
+	bool ip_is_white = false;
+
+
 	while (1)
 	{
+		ip_is_white = false;
 
 		SOCKADDR_IN client_info = { 0 };
 		int addrsize = sizeof(client_info);
@@ -83,7 +105,26 @@ int main()
 
 		char *ip = inet_ntoa(client_info.sin_addr);
 
-		printf("%s", ip);
+		printf("Incomming connection with IP %s\n", ip);
+
+		for (std::list<std::string>::iterator it = white_ip.begin(); it != white_ip.end(); it++)
+		{
+			if (strcmp(ip, (*it).c_str()) == 0)
+			{
+				ip_is_white = true;
+				break;
+			}
+		}
+
+		if (!ip_is_white)
+		{
+			closesocket(incoming);
+			printf("Not in white list, refusing...\n");
+
+			continue;
+		}
+
+		printf("Connection accepted\n");
 
 
 		client_type* new_client = new client_type;  //new - это выделение памяти
